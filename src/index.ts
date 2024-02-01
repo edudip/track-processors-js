@@ -9,25 +9,32 @@ export { ProcessorPipeline };
 export const BackgroundBlur = (
   blurRadius: number = 10,
   segmenterOptions?: SegmenterBaseOptions,
+  wasmFilesetUrl?: string,
+  modelAssetPath?: string,
 ) => {
   const isPipelineSupported = ProcessorPipeline.isSupported && BackgroundTransformer.isSupported;
   if (!isPipelineSupported) {
     throw new Error('pipeline is not supported in this browser');
   }
   const pipeline = new ProcessorPipeline(
-    [new BackgroundTransformer({ blurRadius, segmenterOptions })],
+    [new BackgroundTransformer({ blurRadius, segmenterOptions, wasmFilesetUrl, modelAssetPath })],
     'background-blur',
   );
   return pipeline;
 };
 
-export const VirtualBackground = (imagePath: string, segmenterOptions?: SegmenterBaseOptions) => {
+export const VirtualBackground = (
+  imagePath: string,
+  segmenterOptions?: SegmenterBaseOptions,
+  wasmFilesetUrl?: string,
+  modelAssetPath?: string,
+) => {
   const isPipelineSupported = ProcessorPipeline.isSupported && BackgroundTransformer.isSupported;
   if (!isPipelineSupported) {
     throw new Error('pipeline is not supported in this browser');
   }
   const pipeline = new ProcessorPipeline(
-    [new BackgroundTransformer({ imagePath, segmenterOptions })],
+    [new BackgroundTransformer({ imagePath, segmenterOptions, wasmFilesetUrl, modelAssetPath })],
     'virtual-background',
   );
   return pipeline;
