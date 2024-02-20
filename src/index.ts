@@ -1,50 +1,42 @@
-import ProcessorPipeline from './ProcessorPipeline';
-import BackgroundTransformer, { SegmenterBaseOptions } from './transformers/BackgroundTransformer';
-import DummyTransformer from './transformers/DummyTransformer';
+import ProcessorWrapper from './ProcessorWrapper';
+import BackgroundTransformer, {
+  BackgroundOptions,
+  SegmenterOptions,
+} from './transformers/BackgroundTransformer';
 
 export * from './transformers/types';
 export { default as VideoTransformer } from './transformers/VideoTransformer';
-export { ProcessorPipeline };
+export { ProcessorWrapper, type BackgroundOptions, type SegmenterOptions, BackgroundTransformer };
 
 export const BackgroundBlur = (
   blurRadius: number = 10,
-  segmenterOptions?: SegmenterBaseOptions,
+  segmenterOptions?: SegmenterOptions,
   wasmFilesetUrl?: string,
   modelAssetPath?: string,
 ) => {
-  const isPipelineSupported = ProcessorPipeline.isSupported && BackgroundTransformer.isSupported;
-  if (!isPipelineSupported) {
-    throw new Error('pipeline is not supported in this browser');
-  }
-  const pipeline = new ProcessorPipeline(
-    [new BackgroundTransformer({ blurRadius, segmenterOptions, wasmFilesetUrl, modelAssetPath })],
+  return BackgroundProcessor(
+    { blurRadius, segmenterOptions, wasmFilesetUrl, modelAssetPath },
     'background-blur',
   );
-  return pipeline;
 };
 
 export const VirtualBackground = (
   imagePath: string,
-  segmenterOptions?: SegmenterBaseOptions,
+  segmenterOptions?: SegmenterOptions,
   wasmFilesetUrl?: string,
   modelAssetPath?: string,
 ) => {
-  const isPipelineSupported = ProcessorPipeline.isSupported && BackgroundTransformer.isSupported;
-  if (!isPipelineSupported) {
-    throw new Error('pipeline is not supported in this browser');
-  }
-  const pipeline = new ProcessorPipeline(
-    [new BackgroundTransformer({ imagePath, segmenterOptions, wasmFilesetUrl, modelAssetPath })],
+  return BackgroundProcessor(
+    { imagePath, segmenterOptions, wasmFilesetUrl, modelAssetPath },
     'virtual-background',
   );
-  return pipeline;
 };
 
-export const Dummy = () => {
-  const isPipelineSupported = ProcessorPipeline.isSupported && BackgroundTransformer.isSupported;
-  if (!isPipelineSupported) {
-    throw new Error('pipeline is not supported in this browser');
+export const BackgroundProcessor = (options: BackgroundOptions, name = 'background-processor') => {
+  const isProcessorSupported = ProcessorWrapper.isSupported && BackgroundTransformer.isSupported;
+  if (!isProcessorSupported) {
+    throw new Error('processor is not supported in this browser');
   }
-  const pipeline = new ProcessorPipeline([new DummyTransformer()], 'dummy');
-  return pipeline;
+  const processor = new ProcessorWrapper(new BackgroundTransformer(options), name);
+  return processor;
 };

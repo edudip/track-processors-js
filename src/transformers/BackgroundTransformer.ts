@@ -3,17 +3,17 @@ import { dependencies } from '../../package.json';
 import VideoTransformer from './VideoTransformer';
 import { VideoTransformerInitOptions } from './types';
 
-export type SegmenterBaseOptions = Partial<vision.ImageSegmenterOptions['baseOptions']>;
+export type SegmenterOptions = Partial<vision.ImageSegmenterOptions['baseOptions']>;
 
 export type BackgroundOptions = {
   blurRadius?: number;
   imagePath?: string;
-  segmenterOptions?: SegmenterBaseOptions;
+  segmenterOptions?: SegmenterOptions;
   wasmFilesetUrl?: string;
   modelAssetPath?: string;
 };
 
-export default class BackgroundProcessor extends VideoTransformer {
+export default class BackgroundProcessor extends VideoTransformer<BackgroundOptions> {
   static get isSupported() {
     return typeof OffscreenCanvas !== 'undefined';
   }
@@ -31,11 +31,7 @@ export default class BackgroundProcessor extends VideoTransformer {
   constructor(opts: BackgroundOptions) {
     super();
     this.options = opts;
-    if (opts.blurRadius) {
-      this.blurRadius = opts.blurRadius;
-    } else if (opts.imagePath) {
-      this.loadBackground(opts.imagePath);
-    }
+    this.update(opts);
   }
 
   async init({ outputCanvas, inputElement: inputVideo }: VideoTransformerInitOptions) {
@@ -108,6 +104,15 @@ export default class BackgroundProcessor extends VideoTransformer {
       controller.enqueue(newFrame);
     } finally {
       frame.close();
+    }
+  }
+
+  async update(opts: BackgroundOptions) {
+    this.options = opts;
+    if (opts.blurRadius) {
+      this.blurRadius = opts.blurRadius;
+    } else if (opts.imagePath) {
+      await this.loadBackground(opts.imagePath);
     }
   }
 
