@@ -1,6 +1,6 @@
 {
   "name": "@edudip/track-processors",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Fork from LiveKit track processors",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -39,7 +39,7 @@
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-ecmascript-compat": "^3.0.0",
     "eslint-plugin-import": "2.27.5",
-    "livekit-client": "^1.12.0",
+    "livekit-client": "^1.12.0 || ^2.0.0",
     "prettier": "^2.8.8",
     "tsup": "^7.1.0",
     "typescript": "^5.0.4",
